@@ -73,11 +73,16 @@ class MultiTurnEnv(Environment):
             if self.is_completed(rollout, state, **kwargs):
                 is_completed = True
                 break
+            # Deserialize oai_tools if stored as JSON string
+            oai_tools = info.get("oai_tools", None)
+            if oai_tools and isinstance(oai_tools, str):
+                import json
+                oai_tools = json.loads(oai_tools)
             response = await self.get_model_response(
                 client=client,
                 model=model,
                 prompt=rollout,
-                oai_tools=info.get("oai_tools", None),
+                oai_tools=oai_tools,
                 sampling_args=sampling_args,
                 message_type=self.message_type,
             )

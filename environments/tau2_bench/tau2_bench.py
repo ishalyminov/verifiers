@@ -792,17 +792,17 @@ def create_tau2_dataset(domain: str = "retail") -> Dataset:
         else:
             print(f"DEBUG: Task {task.id} - has_user_message: {has_user_message}, has scenario: {bool(scenario)}")
         
-        # Create dataset row
+        # Create dataset row - convert all nested objects to JSON strings to avoid PyArrow type inference issues
         row = {
             "prompt": initial_messages,
             "question": scenario if scenario else "Help the customer with their request.",
             "info": {
                 "task_id": task.id,
                 "domain": domain,
-                "expected_state": task.expected_state.model_dump() if hasattr(task, 'expected_state') and task.expected_state else {},
-                "initial_state": task.initial_state.model_dump() if hasattr(task, 'initial_state') and task.initial_state else {},
-                "user_scenario": task.user_scenario.model_dump() if hasattr(task, 'user_scenario') and task.user_scenario else {},
-                "evaluation_criteria": task.evaluation_criteria.model_dump() if hasattr(task, 'evaluation_criteria') and task.evaluation_criteria else {},
+                "expected_state": json.dumps(task.expected_state.model_dump()) if hasattr(task, 'expected_state') and task.expected_state else "{}",
+                "initial_state": json.dumps(task.initial_state.model_dump()) if hasattr(task, 'initial_state') and task.initial_state else "{}",
+                "user_scenario": json.dumps(task.user_scenario.model_dump()) if hasattr(task, 'user_scenario') and task.user_scenario else "{}",
+                "evaluation_criteria": json.dumps(task.evaluation_criteria.model_dump()) if hasattr(task, 'evaluation_criteria') and task.evaluation_criteria else "{}",
                 "oai_tools": json.dumps(oai_tools)  # Store as JSON string
             },
             "answer": "Successfully helped the customer",  # Placeholder
@@ -828,7 +828,6 @@ def create_tau2_dataset(domain: str = "retail") -> Dataset:
             print(f"{'='*80}\n")
         
         dataset_rows.append(row)
-    
     return Dataset.from_list(dataset_rows)
 
 
