@@ -796,6 +796,7 @@ Model copies with swapped templates are available here: https://huggingface.co/c
             if max_seq_len > 0 and len(prompt_ids) + len(completion_ids) > max_seq_len:
                 if len(prompt_ids) > max_seq_len:
                     prompt_ids = prompt_ids[:max_seq_len]
+                    prompt_mask = prompt_mask[:max_seq_len]
                 completion_ids = completion_ids[: max_seq_len - len(prompt_ids)]
                 completion_mask = completion_mask[: max_seq_len - len(prompt_ids)]
                 completion_logprobs = completion_logprobs[
